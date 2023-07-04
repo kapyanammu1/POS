@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+  {% block content %}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <style>
+    /* Style for the pop-up form */
+    .popup-form {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #f1f1f1;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      z-index: 1;
+    }
+  </style>
+
+    <div class="pagetitle">
+      <h1>Sales List</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Sales List</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+   
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="container" data-aos="fade-up">
+          <div class="section-title">
+            <h2> </h2>
+          </div>
+          <table class="table datatable">
+            <thead>
+              <tr>
+                <th scope="col">Customer Name</th>
+                <th scope="col">Total Amount</th>
+                <th scope="col">Date/Time</th>  
+                <th scope="col">Action</th>   
+              </tr>
+            </thead>
+            <tbody>
+              {% for sales in sales %}
+              <tr>                                     
+                <td>{{ sales.order }}</td>
+                <td>₱{{ sales.total_amount }}</td>
+                <td>{{ sales.sale_time }}</td>            
+                <td scope="col">
+                  <!-- <button type="button" class="btn btn-light rounded-pill" id="showFormButton">Show Form</button> -->
+                  <button type="button" class="btn btn-light rounded-pill view-details-btn" data-toggle="modal" data-target="#popupForm" data-sale-id="{{ sales.pk }}">View Details</button>
+                  <button type="button" class="btn btn-light rounded-pill"><a href="{% url 'deleteSales' sales.pk %}">Delete</a></button>
+                </td>    
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <label id="SalesID"></label>
+        </div>
+      </div>
+    </div>   
+
+
+    <!-- Popup Form -->
+  <div class="modal fade" id="popupForm" tabindex="-1" role="dialog" aria-labelledby="popupFormLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="popupFormLabel">Item List</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table id="order-items-table" class="table">
+            <!-- Second Table -->
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Qty</th>
+                <th>Price</th>                    
+              </tr>
+            </thead>
+            <tbody id="order-items-body">
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+    // Handle the "View Details" button click
+    $('.view-details-btn').click(function() {
+      var saleId = $(this).data('sale-id');
+      var orderItemsBody = $('#order-items-body');
+      // Clear existing order items from the table
+      orderItemsBody.empty();
+
+      // Make an AJAX request to retrieve the order items for the selected sale
+      $.ajax({
+        url: '/get_order_items/', // Replace with the actual URL to retrieve order items
+        method: 'GET',
+        data: { sale_id: saleId },
+        success: function(response) {
+          // Iterate over the returned order items and add them to the table
+          for (var i = 0; i < response.order_items.length; i++) {
+            var orderItem = response.order_items[i];
+            var rowHtml = '<tr>' +
+              '<td>' + orderItem.name + '</td>' +
+              '<td>' + orderItem.qty + '</td>' +
+              '<td>' + orderItem.price + '</td>' +
+              '</tr>';
+
+            orderItemsBody.append(rowHtml);
+          }
+        },
+        error: function() {
+          alert('Error occurred while retrieving order items.');
+        }
+      });
+    });
+  });
+  </script>
+
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+  {% block content %}
+    <div class="pagetitle">
+      <h1>Items List</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Items List</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Items List</h5>
+              <button type="button" class="btn btn-info rounded-pill"><a href="{% url 'AddItems' %}">Add new item</a></button>
+
+              <!-- Table with stripped rows -->
+              <table class="table datatable">
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Action</th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in items %}
+                  <tr>                    
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.category }}</td>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.price }}</td>
+                    <td scope="col">
+                      <button type="button" class="btn btn-light rounded-pill"><a href="{% url 'EditItems' item.pk %}">Edit</a></button>
+                      <button type="button" class="btn btn-light rounded-pill"><a href="{% url 'deleteItems' item.pk %}">Delete</a></button>
+                    </td>                 
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <!-- End Table with stripped rows -->
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+{% endblock %}

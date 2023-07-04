@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+  {% block content %}
+  {% load static %}
+
+    <div class="pagetitle">
+      <h1>Data Tables</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Payment</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+      
+    <div class="col-lg-12">  
+        <form method="post" enctype="multipart/form-data">                                              
+            <div class="card">               
+                <div class="container" data-aos="fade-up">
+                    <div class="section-title">
+                        <h2>Customer Details</h2>
+                    </div>                           
+                        {% csrf_token %}
+                        <div style="display: none;">{{ order_form.as_p }}</div>                       
+                        {{ order_form_display.as_p }}
+                    <div class="section-title">
+                        <h2>Order Items</h2>
+                    </div>
+                    <table id="second-table" class="table">
+                        <!-- Second Table -->
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Qty</th>
+                            <th>Price</th>                    
+                        </tr>
+                        </thead>
+                        <tbody id="order-items-body">
+                            {% for order_items in items_filtered %}
+                            <tr id="row-{{ order_items.item.id }}">                                             
+                            <td>{{ order_items.item }}</td>
+                            <td class="qty">{{ order_items.quantity }}</td>
+                            <td class="price">${{ order_items.total_price }}</td>                
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>  
+                    <h5>Total Amount: ₱<label id="total-amount">{{ sumaTotal }}</label></h5>                                                                                                     
+                </div>                    
+            </div> 
+            <div>                  
+                <input type="number" step="any" class="form-control" name="totalAmountDisplay" id="id_totalAmountDisplay" placeholder="Input Payment amount here..." value="0"></br>
+                <input type="hidden" name="total_amount" id="id_total_amount">
+                <button onclick="getTotalAmount()" type="submit" class="btn btn-primary">Submit Payment</button>
+            </div>
+        </form>                                                            
+    </div>     
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function getTotalAmount() {
+            var total_amount_display = document.getElementById('id_totalAmountDisplay');
+            var total_amount = document.getElementById('id_total_amount');
+            // Check if the item is already in the second table
+
+            if (total_amount_display.value <= 0) {
+            alert('Invalid Amount. Please try again');
+            return;
+            }           
+            total_amount.value = total_amount_display.value;
+            return;
+        }
+
+
+    </script>
+{% endblock %}

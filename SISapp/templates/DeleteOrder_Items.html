@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+  {% block content %}
+  <script>
+    function submitForm() {
+      document.getElementById("myForm").submit();
+    }
+  </script>
+    <div class="pagetitle">
+      <h1>Form Layouts</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Delete Order Items</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+    <section class="section">
+      <div class="row">
+
+        <div class="row justify-content-center">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Delete Order</h5>
+              <!-- Vertical Form -->
+              <form id="myForm" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="text-center">
+                </div>
+              </form><!-- Vertical Form -->
+
+            </div>
+          </div>  
+        </div>
+      </div>
+    </section>
+    <script>
+      submitForm();
+    </script>
+{% endblock %}

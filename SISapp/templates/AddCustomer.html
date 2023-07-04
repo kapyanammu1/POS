@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+  {% block content %}
+    <div class="pagetitle">
+      <h1>Form Layouts</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item">Forms</li>
+          <li class="breadcrumb-item active">Layouts</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+    <section class="section">
+      <div class="row">
+
+        <div class="row justify-content-center">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Add Customer</h5>
+
+              <!-- Vertical Form -->
+              <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="col-6">{{ form.as_p }}</div>
+                
+                <!--<div class="col-6">
+                  <label for="{{ form.name.id_for_label }}" class="form-label">Item Name</label>
+                  <input type="text" class="form-control" id="{{ form.name.id_for_label }}" name="{{ form.name.html_name }}">
+                </div>
+                <div class="col-6">
+                  <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                    <select class="form-control" required id="{{ form.category.id_for_label }}" name="{{ form.category.html_name }}"><option value selected>{{ form.category.value }}</option></select>
+                </div>                               
+                <div class="col-9">
+                  <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                  <input type="text" class="form-control" id="{{ form.description.id_for_label }}" name="{{ form.description.html_name }}">
+                </div>
+                <div class="col-5">
+                  <label for="{{ form.price.id_for_label }}" class="form-label">Price</label>
+                  <input type="number" class="form-control" id="{{ form.price.id_for_label }}" name="{{ form.price.html_name }}">
+                </div>
+                <div class="col-5">
+                  <label for="{{ form.image.id_for_label }}" class="form-label">Image</label>
+                  <input type="file" accept="image/*" class="form-control" id="{{ form.image.id_for_label }}" name="{{ form.image.html_name }}">
+                </div>-->
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                  <button type="reset" class="btn btn-secondary">Reset</button>
+                </div>
+              </form><!-- Vertical Form -->
+
+            </div>
+          </div>  
+        </div>
+      </div>
+    </section>
+
+{% endblock %}

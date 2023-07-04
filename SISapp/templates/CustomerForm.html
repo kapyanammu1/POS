@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+  {% block content %}
+    <div class="pagetitle">
+      <h1>Data Tables</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item">Tables</li>
+          <li class="breadcrumb-item active">Data</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Items List</h5>
+              <button type="button" class="btn btn-info rounded-pill"><a href="{% url 'AddCustomer' %}">Add new customer</a></button>
+
+              <!-- Table with stripped rows -->
+              <table class="table datatable">
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Phone_number</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Action</th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for customer in customer %}
+                  <tr>                    
+                    <td>{{ customer.name }}</td>
+                    <td>{{ customer.address }}</td>
+                    <td>{{ customer.phone_number }}</td>
+                    <td>{{ customer.email }}</td>
+                    <td scope="col">
+                      <button type="button" class="btn btn-light rounded-pill"><a href="{% url 'EditCustomer' customer.pk %}">Edit</a></button>
+                      <button type="button" class="btn btn-light rounded-pill"><a href="{% url 'deleteCustomer' customer.pk %}">Delete</a></button>
+                    </td>                 
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <!-- End Table with stripped rows -->
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+{% endblock %}

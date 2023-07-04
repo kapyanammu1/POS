@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+  {% block content %}
+
+  <style>
+    /* Style for the pop-up form */
+    .popup-form {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #f1f1f1;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      z-index: 1;
+    }
+  </style>
+
+    <div class="pagetitle">
+      <h1>Order List</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Order List</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+   
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="container" data-aos="fade-up">
+          <div class="section-title">
+            <h2> </h2>
+          </div>
+          <button type="button" class="btn btn-info rounded-pill"><a href="{% url 'OrderForm' %}">Add New Orders</a></button>
+          <table class="table datatable">
+            <thead>
+              <tr>
+                <th scope="col">Customer Name</th>
+                <th scope="col">Table number</th>
+                <th scope="col">Order Time</th>
+                <th scope="col">Action</th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in order %}
+              <tr>                    
+                <td>{{ order.customer_name }}</td>
+                <td>{{ order.table_number }}</td>
+                <td>{{ order.order_time }}</td>
+                <td scope="col">
+                  <button type="button" class="btn btn-light rounded-pill"> <a href="{% url 'Payment' order.pk %}">Payment</a></button>
+                  <button type="button" class="btn btn-light rounded-pill"><a href="{% url 'Edit_Order' order.pk %}">Edit</a></button>
+                  <button type="button" class="btn btn-light rounded-pill"><a href="{% url 'deleteOrder' order.pk %}">Delete</a></button>
+                </td>                 
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  
+          <div class="popup-form" id="myForm">
+            <h2>Popup Form</h2>
+            <h3>{{items_filtered.order.customer_name}}</h3>
+            <form>
+              <!-- Your form fields -->
+              <table class="table datatable">
+                <thead>
+                  <tr>
+                    <th scope="col">Item</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order_items in items_filtered %}
+                  <tr id="row-{{ order_items.item.id }}">           
+                            
+                    <td>{{ order_items.item }}</td>
+                    <td class="qty">{{ order_items.quantity }}</td>
+                    <td class="price">${{ order_items.total_price }}</td>                
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </form>
+            <button onclick="closeForm()">Close</button>
+          </div>
+
+          <script>
+            function openForm() {
+              document.getElementById("myForm").style.display = "block";
+            }
+        
+            function closeForm() {
+              document.getElementById("myForm").style.display = "none";
+            }
+
+            function computeTotal(input) {
+            var quantity = parseInt(input.value);
+            var priceElement = input.parentNode.parentNode.querySelector('.price');
+            var price = parseFloat(priceElement.textContent);
+            var total = quantity * price;
+            // Perform any additional calculations or formatting if needed
+            // For example, you can update a total field:
+            // var totalField = document.getElementById('total');
+            // totalField.textContent = total.toFixed(2);
+          }
+          </script>
+
+{% endblock %}

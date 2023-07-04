@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+  {% block content %}
+  {% load static %}
+
+    <div class="pagetitle">
+      <h1>Data Tables</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Edit Orders</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-7">
+          <div class="card">
+            <div class="container" data-aos="fade-up">
+
+              <div class="section-title">
+                <h2>Menu</h2>
+              </div>
+              <table class="table datatable">
+                <thead>
+                  <tr>
+                    <th scope="col">Image</th>                   
+                    <th scope="col">Name</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Quantity</th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in itemOb %}
+                  <tr>   
+                    {% if item.image %}
+                    <td><img src="{{ item.image.url }}" class="rounded-circle" width="90" height="80"></td>   
+                    {% else %}
+                    <td><img src="{% static 'assets/img/food.png' %}" class="rounded-circle" width="90" height="80"></td>
+                    {% endif %} 
+                                       
+                    <td>{{ item.name }}</br>({{ item.category }})</td>
+                    <td>${{ item.price }}</td>
+                    <td scope="col">
+                        <input id="additional-input-{{ item.id }}" type="number" class="form-control quantity-input" value="0">
+                        <button onclick="addTableRow('{{ item.id }}', '{{ item.name }}', '{{ item.price }}')" class="btn btn-info rounded-pill">Add Item</button>                                           
+                    </td>                 
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>       
+
+        <div class="col-lg-5">
+
+          <div class="card">
+            <form method="post" enctype="multipart/form-data">
+              <div class="container" data-aos="fade-up">
+                <div class="section-title">
+                  <h2>Customer Details</h2>
+                </div>                           
+                    {% csrf_token %}                       
+                    {{ order_form.as_p }}
+                  <div class="section-title">
+                    <h2>Order Items</h2>
+                  </div>
+
+                  <table id="second-table" class="table">
+                    <!-- Second Table -->
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Qty</th>
+                        <th>Price</th>                    
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="order-items-body">
+                        {% for order_items in items_filtered %}
+                        <tr id="row-{{ order_items.item.id }}">           
+                                  
+                          <td><input name="order_items" type="hidden" value ="{{ order_items.item }},{{ order_items.quantity }}" id="id_item"> {{ order_items.item }}</td>
+                          <td class="qty">{{ order_items.quantity }}</td>
+                          <td class="price">${{ order_items.total_price }}</td>
+                          <td scope="col">
+                            <button class="btn btn-danger rounded-pill" onclick="deleteTableRow('row-{{ order_items.item.id }}')">Remove</button>
+                          </td>                 
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                  </table>
+                      
+                </div>
+              </div>
+                <h5>Total Amount:$<label id="total-amount">{{ sumaTotal }}</label></h5>
+                <button type="submit" class="btn btn-primary">Place Order</button>
+            </form>
+          </div>   
+        </div>     
+      </div>
+    </section><!-- End Specials Section -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      function addTableRow(id, name, price) {
+        var secondTableBody = document.getElementById('second-table').querySelector('tbody');
+        var additionalInput = document.getElementById('additional-input-' + id);
+        var qty = additionalInput.value;
+        var rowID = 'row-' + id;
+        // Check if the item is already in the second table
+        if (parseInt(qty) < 1) {
+          alert('Invalid Quantity. Please enter a quantity greater than 0');
+          return;
+        }
+
+        var duplicateRow = secondTableBody.querySelector('tr[id="' + rowID + '"]');
+        if (duplicateRow) {
+          // Handle duplicate item case
+          var confirmation = confirm('Item already added. Do you want to add quantity to the existing item?');
+          if (confirmation) {
+            var quantityCell = duplicateRow.querySelector('.qty');
+            var currentQuantity = parseInt(quantityCell.innerText);
+            var newQuantity = currentQuantity + parseInt(qty);
+            var priceCell = duplicateRow.querySelector('.price');
+            var currentprice = parseInt(priceCell.innerText);
+            var newprice = newQuantity * parseInt(price);
+            quantityCell.innerText = newQuantity;
+            priceCell.innerText = '$' + newprice;
+            var totalAmount = calculateTotalAmount();
+
+            // Update the total quantity display
+            var totalAmountDisplay = document.getElementById('total-amount');
+            totalAmountDisplay.innerText = totalAmount;
+          }
+          return;
+        }
+        
+        
+        // Generate the HTML for the new row
+        var newRow = '<tr id="' + rowID + '">' +
+          '<td>' + name + ' <input type="hidden" name="order_items" value = "' + name + ',' + qty + '" id="id_item"></td>' +
+          '<td class="qty">' + qty + '</td>' +
+          '<td class="price">$' + (parseFloat(parseFloat(price) * parseFloat(qty))).toFixed(2) + '</td>' +          
+          '<td><button class="btn btn-danger rounded-pill" onclick="deleteTableRow(\'' + rowID + '\')">Remove</button></td>' +
+          '</tr>';
+    
+        // Append the new row to the second table
+        secondTableBody.innerHTML += newRow;
+
+        // Calculate the total quantity
+        var totalAmount = calculateTotalAmount();
+
+        // Update the total quantity display
+        var totalAmountDisplay = document.getElementById('total-amount');
+        totalAmountDisplay.innerText = totalAmount;
+        additionalInput.value = 0;
+      }
+
+      function calculateTotalAmount() {
+        var secondTableBody = document.getElementById('second-table').querySelector('tbody');
+        var rows = secondTableBody.querySelectorAll('tr');
+        var totalAmount = 0;
+
+        rows.forEach(function(row) {
+          var amountCell = row.querySelector('.price');
+          var amount = parseFloat(amountCell.innerText.replace("$", ""));
+          totalAmount += amount;
+        });
+
+        return totalAmount.toFixed(2);
+      }
+
+      function deleteTableRow(rowId) {
+        var row = document.getElementById(rowId);
+        if (row) {
+          row.remove();
+        }
+        // Calculate the total quantity
+        var totalAmount = calculateTotalAmount();
+
+        var totalAmountDisplay = document.getElementById('total-amount');
+        totalAmountDisplay.innerText = totalAmount;
+
+      }
+     
+    </script>
+
+{% endblock %}
