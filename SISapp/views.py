@@ -21,7 +21,7 @@ def index(request):
     total_quantity = paid_items_filtered.filter(order__sale__sale_time__date=today).aggregate(total_quantity=Sum('quantity'))['total_quantity']
     #total_quantity1 = paid_items_filtered.filter(order__sale__sale_time__date=day_Before).aggregate(total_quantity1=Coalesce(Sum('quantity', output_field1=DecimalField()), Value(0, output_field1=DecimalField())))['total_quantity1']
     total_quantity1 = paid_items_filtered.filter(order__sale__sale_time__date=day_Before).aggregate(total_quantity1=Sum('quantity'))['total_quantity1']
-    total_sales = Sale.objects.filter(sale_time__month=thisMonth).aggregate(total_sales=Sum('total_amount'))['total_sales'] 
+    total_sales = Sale.objects.filter(sale_time__month=thisMonth).aggregate(total_sales=Sum('total_amount'))['total_sales']  
     total_sales1 = Sale.objects.filter(sale_time__month=month_Before.month).aggregate(total_sales1=Coalesce(Sum('total_amount', output_field=DecimalField()), Value(0, output_field=DecimalField())))['total_sales1']
     items = Item.objects.all()
     customer = Order.objects.filter(order_time__year=thisYear).count()  
